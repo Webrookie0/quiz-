@@ -1,0 +1,14 @@
+[build]
+  base = "frontend"
+  command = "npm run build"
+  publish = "build"
+
+# Keep CRA compatible with Netlify defaults by pinning Node.
+[build.environment]
+  NODE_VERSION = "20"
+
+# Single Page App routing (React Router)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
