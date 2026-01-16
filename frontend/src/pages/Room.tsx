@@ -70,7 +70,7 @@ const Room: React.FC = () => {
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
     const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:8080/api';
     const wsHost = apiUrl.replace(/^https?:\/\//, '').replace(/\/api$/, '');
-    wsUrlRef.current = `${protocol}//${wsHost}/ws`;
+    wsUrlRef.current = `${protocol}//${wsHost}`;
 
     return () => {
       websocketService.disconnect();
