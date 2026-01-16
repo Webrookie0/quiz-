@@ -10,22 +10,26 @@ Recommended: **Frontend on Vercel + Backend on Render/Railway/Fly**.
 
 ---
 
-## Deploy Backend to Render (Recommended Blueprint)
-
-This project includes a `render.yaml` file to make deployment extremely easy.
+## Deploy Backend to Render (Manual & Free)
 
 1.  Push your code to GitHub.
 2.  Go to [Render Dashboard](https://dashboard.render.com/).
-3.  Click **New +** -> **Blueprint**.
+3.  Click **New +** -> **Web Service**.
 4.  Connect your GitHub repository.
-5.  Render will automatically detect the `render.yaml` file.
-6.  Click **Apply**.
-7.  **IMPORTANT**: You will be asked to provide values for the environment variables defined in `render.yaml`:
-    -   `MONGODB_URI`: Your MongoDB connection string.
-    -   `GEMINI_API_KEY`: Your Google Gemini API key.
-    -   `GOOGLE_CLIENT_ID`: Google OAuth Client ID.
-    -   `GOOGLE_CLIENT_SECRET`: Google OAuth Client Secret.
-    -   `FRONTEND_URL`: The URL of your deployed frontend (you can update this later after you deploy the frontend).
+5.  **Root Directory**: `backend` (Important!).
+6.  **Build Command**: `npm install && npm run build`
+7.  **Start Command**: `npm start`
+8.  **Instance Type**: Select "Free".
+9.  **Environment Variables** (Click "Advanced" or "Environment"):
+    -   `NODE_ENV` = `production`
+    -   `MONGODB_URI` = Your MongoDB connection string.
+    -   `GEMINI_API_KEY` = Your Google Gemini API key.
+    -   `SESSION_SECRET` = A long random string (e.g. `g4h7-f2d9-v8n1`).
+    -   `GOOGLE_CLIENT_ID` = ...
+    -   `GOOGLE_CLIENT_SECRET` = ...
+    -   `FRONTEND_URL` = Your Vercel Frontend URL (update this after deploying frontend).
+
+10. Click **Create Web Service**.
 
 ---
 
