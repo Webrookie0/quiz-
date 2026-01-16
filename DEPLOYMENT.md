@@ -10,48 +10,47 @@ Recommended: **Frontend on Vercel + Backend on Render/Railway/Fly**.
 
 ---
 
-## Deploy Frontend to Vercel (recommended)
+## Deploy Backend to Render (Recommended Blueprint)
 
-### 1) Push to GitHub
-1. Create a GitHub repo
-2. Push this folder to GitHub
+This project includes a `render.yaml` file to make deployment extremely easy.
 
-### 2) Create a Vercel project
-1. Vercel → **New Project** → import your repo
-2. **Root Directory**: `frontend`
-3. Build settings (usually auto-detected):
-   - Build Command: `npm run build`
-   - Output Directory: `build`
-
-### 3) Set frontend environment variables (Vercel → Project → Settings → Environment Variables)
-- `REACT_APP_API_URL` = `https://<your-backend-domain>/api`
-  - Example: `https://quiz-backend.onrender.com/api`
-
-Then redeploy.
+1.  Push your code to GitHub.
+2.  Go to [Render Dashboard](https://dashboard.render.com/).
+3.  Click **New +** -> **Blueprint**.
+4.  Connect your GitHub repository.
+5.  Render will automatically detect the `render.yaml` file.
+6.  Click **Apply**.
+7.  **IMPORTANT**: You will be asked to provide values for the environment variables defined in `render.yaml`:
+    -   `MONGODB_URI`: Your MongoDB connection string.
+    -   `GEMINI_API_KEY`: Your Google Gemini API key.
+    -   `GOOGLE_CLIENT_ID`: Google OAuth Client ID.
+    -   `GOOGLE_CLIENT_SECRET`: Google OAuth Client Secret.
+    -   `FRONTEND_URL`: The URL of your deployed frontend (you can update this later after you deploy the frontend).
 
 ---
 
-## Deploy Backend (choose one)
+## Deploy Frontend to Vercel
 
-### Option A: Render (simplest)
-1. Create a new **Web Service** from your GitHub repo
-2. Root Directory: `backend`
-3. Build Command: `npm install; npm run build`
-4. Start Command: `npm start`
-5. Set environment variables:
-   - `PORT` = `8080` (Render can override; ok either way)
-   - `MONGODB_URI` = your Mongo connection string
-   - `SESSION_SECRET` = a long random string
-   - `FRONTEND_URL` = `https://<your-vercel-domain>`
-   - `NODE_ENV` = `production`
-   - `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` (if using Google login)
-
-#### Google OAuth callback URL
-In Google Cloud Console set an authorized redirect URI:
-- `https://<your-backend-domain>/api/auth/google/callback`
+1.  Push your code to GitHub.
+2.  Go to [Vercel Dashboard](https://vercel.com/dashboard).
+3.  Click **Add New...** -> **Project**.
+4.  Import your GitHub repository.
+5.  **Root Directory**: Click "Edit" and select the `frontend` folder.
+6.  **Build Settings**: Leave as default (`npm run build`).
+7.  **Environment Variables**:
+    -   `REACT_APP_API_URL`: The URL of your deployed Render backend (e.g., `https://quiz-backend.onrender.com/api`).
+        -   *Note: Make sure to include `/api` at the end.*
+8.  Click **Deploy**.
 
 ---
+
+## Final Step: Link them together
+
+1.  After Frontend is deployed, copy its URL (e.g., `https://my-quiz-app.vercel.app`).
+2.  Go back to your Render Dashboard -> Your Service -> **Environment**.
+3.  Update `FRONTEND_URL` to match your Vercel URL.
+4.  Render might redeploy automatically, or you can manually trigger a deploy.
 
 ## Notes
-- `frontend/vercel.json` is included to ensure React Router routes work on refresh.
-- If you must host everything on Vercel, you’d need to remove/replace WebSockets (e.g., Ably/Pusher) and convert the backend to Vercel serverless functions.
+-   `frontend/vercel.json` is included to ensure React Router routes work on refresh.
+
