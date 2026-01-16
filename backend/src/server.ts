@@ -21,6 +21,7 @@ const PORT = process.env.PORT ? Number(process.env.PORT) : 8080;
 
 // Express app setup
 const app = express();
+app.set('trust proxy', 1); // Trust first proxy (Render load balancer)
 app.use(cors({
   origin: process.env.FRONTEND_URL || 'http://localhost:3000',
   credentials: true,

@@ -8,7 +8,7 @@ export const initializePassport = () => {
       {
         clientID: process.env.GOOGLE_CLIENT_ID || '',
         clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
-        callbackURL: '/api/auth/google/callback',
+        callbackURL: process.env.GOOGLE_CALLBACK_URL || '/api/auth/google/callback',
       },
       async (_accessToken, _refreshToken, profile, done) => {
         try {
@@ -18,19 +18,19 @@ export const initializePassport = () => {
             return done(null, user);
           }
 
-           const newuserdata:Partial<IUser> = {
+          const newuserdata: Partial<IUser> = {
             googleId: profile.id,
             email: profile.emails?.[0]?.value || '',
             name: profile.displayName || '',
           };
-          if(profile.photos?.[0]?.value){
-            newuserdata.picture= profile.photos?.[0]?.value;
+          if (profile.photos?.[0]?.value) {
+            newuserdata.picture = profile.photos?.[0]?.value;
           }
           const newuser = await User.create(newuserdata)
 
           return done(null, newuser);
         } catch (error) {
-          return done(error );
+          return done(error);
         }
       }
     )
