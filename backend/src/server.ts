@@ -63,7 +63,26 @@ app.get('/api/health', (req, res) => {
 const server = http.createServer(app);
 
 // WebSocket server
-const wss = new WebSocketServer({ server });
+const wss = new WebSocketServer({ server, path: '/ws' });
+
+// Heartbeat to keep connection alive on Render
+function heartbeat(this: WebSocket) {
+  (this as any).isAlive = true;
+}
+
+const interval = setInterval(() => {
+  wss.clients.forEach((ws) => {
+    const socket = ws as any;
+    if (socket.isAlive === false) return ws.terminate();
+
+    socket.isAlive = false;
+    ws.ping();
+  });
+}, 30000);
+
+wss.on('close', () => {
+  clearInterval(interval);
+});
 
 // Store active connections by roomId and socketId
 const roomConnections = new Map<string, Map<string, WebSocket>>();
@@ -72,6 +91,8 @@ const socketToRoom = new Map<string, { roomId: string; userId?: string }>();
 // WebSocket connection handler
 wss.on('connection', (ws: WebSocket, req) => {
   console.log('New WebSocket connection');
+  (ws as any).isAlive = true;
+  ws.on('pong', heartbeat);
 
   ws.on('message', async (message: WebSocket.RawData) => {
     try {
