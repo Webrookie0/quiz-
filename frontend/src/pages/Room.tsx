@@ -67,10 +67,20 @@ const Room: React.FC = () => {
     }
 
     // Get WebSocket URL
-    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:8080/api';
-    const wsHost = apiUrl.replace(/^https?:\/\//, '').replace(/\/api\/?$/, '');
-    wsUrlRef.current = `${protocol}//${wsHost}/ws`;
+    let wsUrl = '';
+    if (process.env.REACT_APP_API_URL) {
+      // Use configured API URL
+      const apiUrl = process.env.REACT_APP_API_URL;
+      const wsProtocol = apiUrl.startsWith('https') ? 'wss:' : 'ws:';
+      const wsHost = apiUrl.replace(/^https?:\/\//, '').replace(/\/api\/?$/, '');
+      wsUrl = `${wsProtocol}//${wsHost}/ws`;
+    } else {
+      // Fallback to localhost default
+      wsUrl = 'ws://localhost:8080/ws';
+    }
+
+    console.log('Attempting to connect to WebSocket at:', wsUrl);
+    wsUrlRef.current = wsUrl;
 
     return () => {
       websocketService.disconnect();
