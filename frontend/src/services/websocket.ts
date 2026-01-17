@@ -1,7 +1,7 @@
 type WebSocketMessage = {
   type: string;
   payload?: any;
-  message?:string;
+  message?: string;
 };
 
 type WebSocketCallbacks = {
@@ -21,13 +21,21 @@ class WebSocketService {
   private callbacks: WebSocketCallbacks = {};
   private reconnectAttempts = 0;
   private maxReconnectAttempts = 5;
+  private messageQueue: WebSocketMessage[] = [];
 
   connect(url: string) {
+    // If already connected/connecting to the same URL, might want to avoid reconnecting,
+    // but for now, we'll assume a fresh connect is desired or handle it simply.
+    if (this.ws) {
+      this.ws.close();
+    }
+
     this.ws = new WebSocket(url);
 
     this.ws.onopen = () => {
       console.log('WebSocket connected');
       this.reconnectAttempts = 0;
+      this.flushMessageQueue();
     };
 
     this.ws.onmessage = (event) => {
@@ -100,7 +108,20 @@ class WebSocketService {
     if (this.ws && this.ws.readyState === WebSocket.OPEN) {
       this.ws.send(JSON.stringify(message));
     } else {
-      console.error('WebSocket is not connected');
+      console.log('WebSocket not ready, queuing message:', message.type);
+      this.messageQueue.push(message);
+    }
+  }
+
+  private flushMessageQueue() {
+    if (!this.ws || this.ws.readyState !== WebSocket.OPEN) return;
+
+    while (this.messageQueue.length > 0) {
+      const message = this.messageQueue.shift();
+      if (message) {
+        console.log('Sending queued message:', message.type);
+        this.ws.send(JSON.stringify(message));
+      }
     }
   }
 
@@ -114,6 +135,7 @@ class WebSocketService {
       this.ws = null;
     }
     this.callbacks = {};
+    this.messageQueue = [];
   }
 }
 
